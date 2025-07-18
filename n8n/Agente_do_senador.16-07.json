@@ -1,0 +1,1229 @@
+{
+  "name": "Agente do senador",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "gpt-3.5-turbo",
+        "options": {}
+      },
+      "id": "d5e60eb2-267c-4f68-aefe-439031bcaceb",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        -520
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "neaf7wtnxDFfajtk",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Nome: {{ $('Norm').item.json.name }}\nMensagem:{{ $('Norm').item.json.message }}\nCidade: {{ $json.Cidade }}\n\nResponda a pergunta ou pergunte no que mais pode ajudar ou de acordo com a mensagem se se despeça educadamente e lembrando que pode contar sempre conosco. ",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Você é um assistente virtual da equipe do senador Guimarães Rosa.\n\nSempre responda com simpatia, cordialidade, acolhimento e objetividade, utilizando linguagem natural, acessível e empática. Fale sempre em terceira pessoa, representando a equipe do senador. Utilize emojis adequados para demonstrar acolhimento. Mantenha as respostas breves, com foco em acolher, registrar e encaminhar as demandas da população.\n\nSe a cidade da pessoa estiver na mensagem, responda de forma acolhedora e siga o fluxo normalmente. Caso a cidade não esteja presente, pergunte sutil e cordialmente de qual cidade de Pernambuco ela está falando.\n\nCaso a mensagem contenha críticas construtivas, acolha, agradeça e informe que será encaminhada. Se houver críticas agressivas com conteúdo útil, mantenha o tom calmo, filtre o útil e responda apenas o necessário. Em caso de mensagens com ódio, ofensas ou ataques, responda com neutralidade, oriente sobre canais oficiais e use apenas: Se for uma ameaça ou conteúdo ilegal, encaminhe à assessoria jurídica e não responda.\n\nCidades de atuação em Pernambuco:\n- Nova Aurora: foco em saúde e educação superior.\n- Serra Verde: inclusão e proteção territorial.\n- Porto Esperança: programa “Cuidar é Dever”.\n- Vila da Liberdade: acolhimento e apoio jurídico.\n- Santa Luzia do Vale: conectividade e educação rural.\n\nPrincípios: ética, escuta ativa, boa convivência e nunca pedir ou aceitar dinheiro. Preserve a imagem do senador com responsabilidade e nunca rebata com agressividade.\n\nSe houver mensagens anteriores no histórico, vá direto ao ponto com eficiência e cordialidade.\n"
+        }
+      },
+      "id": "41174c8a-6ac8-42bd-900e-ca15196600c5",
+      "name": "Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1300,
+        -740
+      ],
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1f974f51-88ae-4216-a867-8850eb5fe373",
+              "name": "numero",
+              "value": "={{ $json.body.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "b929f985-e897-46f8-9311-dc279eaddf43",
+              "name": "name",
+              "value": "={{ $json.body.senderName }}",
+              "type": "string"
+            },
+            {
+              "id": "a0c84455-5247-46df-b8e0-d6331201606d",
+              "name": "message",
+              "value": "={{ $json.body.text.message }}",
+              "type": "string"
+            },
+            {
+              "id": "87fc85cc-eed1-4013-bc14-f845e740295a",
+              "name": "group",
+              "value": "={{ $json.body.isGroup }}",
+              "type": "string"
+            },
+            {
+              "id": "d464f3ce-1bba-4722-9975-35d35a5fd8b1",
+              "name": "ddd",
+              "value": "={{(() => {\n  const numero = $json.body.phone.toString(); // Garante que é string\n  return numero.substring(2, 4); // Extrai os 2 dígitos após \"55\"\n})()}}",
+              "type": "string"
+            },
+            {
+              "id": "da1b24a5-b9b5-4726-888a-78834676c938",
+              "name": "sessionId",
+              "value": "={{ $json.body.phone }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -940,
+        -440
+      ],
+      "id": "ce90f124-7aa7-4f43-ad36-b37641624589",
+      "name": "Norm"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        -540
+      ],
+      "id": "0260682c-26cf-4dd2-9750-b8106d9d11df",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "052ead16-ecba-4ad3-88cf-6631d53552a2",
+              "leftValue": "={{(() => {\n  const ddd = $json.ddd.toString();\n  return ddd === '21' || ddd === '61';\n})()}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -500,
+        -340
+      ],
+      "id": "ad8ecf94-fc2c-473f-b39e-0ef29862006b",
+      "name": "Filtra número"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6423dd4a-2870-40d2-bed3-3ddc440a9584",
+              "name": "chatInput",
+              "value": "={\n  \"chatInput\": \"={{ $json.message }}\",\n  \"nome\": \"={{ $json.name }}\"\n}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -280,
+        -440
+      ],
+      "id": "dd1dd1f9-0311-4dea-8115-0c09332edae6",
+      "name": "Set"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "42cacea3-1284-4dcb-aa76-c8fe299f6aa3",
+              "name": "sessionId",
+              "value": "={{ $('Norm').item.json.sessionId }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -60,
+        -440
+      ],
+      "id": "279aef4a-1616-4c72-a79b-02bce4e56797",
+      "name": "sessionId"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "{{ $json.Key }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1340,
+        -520
+      ],
+      "id": "fea1760e-a65c-4667-8cee-ba86b7e94160",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.z-api.io/instances/3E301E14836C10689C150E37D3B903DB/token/0E07D9628EA2D1716F187A10/send-text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Client-Token",
+              "value": "F7f292613235142438850606ae6ed5f89S"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  phone: $('sessionId').item.json.sessionId,\n  message: $('Agent').item.json.output\n}) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2360,
+        -620
+      ],
+      "id": "c4fedc7f-0e38-41a3-a6c8-1847ab112038",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1700,
+        -640
+      ],
+      "id": "01656969-e96f-4593-ba7d-16cb6a901e06",
+      "name": "Wait1",
+      "webhookId": "4ab2b997-0ddf-42df-b455-c4e4cae80d8f"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qDTH5FdDF2w6p76F5rOfxwmrKFY8_xS6IdVPnmpOa_k",
+          "mode": "list",
+          "cachedResultName": "Recebe_contatos_WhatsApp",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qDTH5FdDF2w6p76F5rOfxwmrKFY8_xS6IdVPnmpOa_k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1143499472,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qDTH5FdDF2w6p76F5rOfxwmrKFY8_xS6IdVPnmpOa_k/edit#gid=1143499472"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Key",
+              "lookupValue": "={{ $('Norm').item.json.sessionId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        600,
+        -440
+      ],
+      "id": "cf3414d2-9ec5-4682-baa8-0b30914b2a6c",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aoP14O6VZNKGLQKv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Nome: {{ $('Norm').item.json.name }}\nMensagem:{{ $('Norm').item.json.message }}\nCidade: {{ $json.Cidade }}\n\nMensagem: \nVoce deve tentar identificar a cidade na conversa, Se não conseguir identificar a cidade, você deve perguntar de onde fala, qualsua cidade que vive, sua função é descobrie de onde fala.\n\nCaso descubra a cidade mencionada grave em {{ $('Get row(s) in sheet').item.json.Cidade }}\nResponda a pergunta ou pergunte no que mais pode ajudar ou de acordo com a mensagem se se despeça educadamente e lembrando que pode contar sempre conosco. ",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Você é um assistente da equipe do senador Guimarães Rosa.\n\n1. Sempre responda de forma simpática, cordial, acolhedora e objetiva.\n2. Use linguagem natural, empática e acessível.\n3. Utilize emojis adequados para transmitir acolhimento.\n4. Sempre fale em terceira pessoa (como equipe do senador).\n5. Nunca repita a mensagem recebida.\n6. Caso a cidade da pessoa esteja presente, apenas responda com acolhimento e siga o fluxo de encaminhamento.\n7. Mantenha a resposta sempre breve, com foco em acolher, registrar e encaminhar.\n\nVocê está representando um mandato que valoriza o bem comum e as causas sociais.\nLista de cidades"
+        }
+      },
+      "id": "1cdc2cbd-9427-4111-bff9-745959484f9e",
+      "name": "Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1300,
+        -240
+      ],
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "model": "gpt-3.5-turbo",
+        "options": {}
+      },
+      "id": "57556e6b-2890-464b-b7df-7b3ee00f8f50",
+      "name": "OpenAI Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "neaf7wtnxDFfajtk",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "{{ $json.Key }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1160,
+        0
+      ],
+      "id": "52961405-0e97-4d0c-ab1e-6cb914bb7351",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f769b1c8-dda2-43a2-9382-c4137a825255",
+              "name": "cidadesPE",
+              "value": "[   \"Abreu e Lima\",   \"Afogados da Ingazeira\",   \"Afrânio\",   \"Agrestina\",   \"Água Preta\",   \"Águas Belas\",   \"Alagoinha\",   \"Aliança\",   \"Altinho\",   \"Amaraji\",   \"Angelim\",   \"Araçoiaba\",   \"Araripina\",   \"Arcoverde\",   \"Barra de Guabiraba\",   \"Barreiros\",   \"Belém de Maria\",   \"Belém do São Francisco\",   \"Belo Jardim\",   \"Betânia\",   \"Bezerros\",   \"Bodocó\",   \"Bom Conselho\",   \"Bom Jardim\",   \"Bonito\",   \"Brejão\",   \"Brejinho\",   \"Brejo da Madre de Deus\",   \"Buenos Aires\",   \"Buíque\",   \"Cabo de Santo Agostinho\",   \"Cabrobó\",   \"Cachoeirinha\",   \"Caetés\",   \"Calçado\",   \"Calumbi\",   \"Camaragibe\",   \"Camocim de São Félix\",   \"Camutanga\",   \"Canhotinho\",   \"Capoeiras\",   \"Carnaíba\",   \"Carnaubeira da Penha\",   \"Carpina\",   \"Caruaru\",   \"Casinhas\",   \"Catende\",   \"Cedro\",   \"Chã de Alegria\",   \"Chã Grande\",   \"Condado\",   \"Correntes\",   \"Cortês\",   \"Cumaru\",   \"Cupira\",   \"Custódia\",   \"Dormentes\",   \"Escada\",   \"Exu\",   \"Feira Nova\",   \"Ferreiros\",   \"Flores\",   \"Floresta\",   \"Frei Miguelinho\",   \"Gameleira\",   \"Garanhuns\",   \"Glória do Goitá\",   \"Goiana\",   \"Granito\",   \"Gravatá\",   \"Iati\",   \"Ibimirim\",   \"Ibirajuba\",   \"Igarassu\",   \"Iguaraci\",   \"Ilha de Itamaracá\",   \"Inajá\",   \"Ingazeira\",   \"Ipojuca\",   \"Ipubi\",   \"Itacuruba\",   \"Itaíba\",   \"Itambé\",   \"Itapetim\",   \"Itapissuma\",   \"Itaquitinga\",   \"Jaboatão dos Guararapes\",   \"Jaqueira\",   \"Jataúba\",   \"Jatobá\",   \"João Alfredo\",   \"Joaquim Nabuco\",   \"Jucati\",   \"Jupi\",   \"Jurema\",   \"Lagoa de Itaenga\",   \"Lagoa do Carro\",   \"Lagoa do Ouro\",   \"Lagoa dos Gatos\",   \"Lagoa Grande\",   \"Lajedo\",   \"Limoeiro\",   \"Macaparana\",   \"Machados\",   \"Manari\",   \"Maraial\",   \"Mirandiba\",   \"Moreilândia\",   \"Moreno\",   \"Nazaré da Mata\",   \"Olinda\",   \"Orobó\",   \"Orocó\",   \"Ouricuri\",   \"Palmares\",   \"Palmeirina\",   \"Panelas\",   \"Paranatama\",   \"Parnamirim\",   \"Passira\",   \"Paudalho\",   \"Paulista\",   \"Pedra\",   \"Pesqueira\",   \"Petrolândia\",   \"Petrolina\",   \"Poção\",   \"Pombos\",   \"Primavera\",   \"Quipapá\",   \"Quixaba\",   \"Recife\",   \"Riacho das Almas\",   \"Ribeirão\",   \"Rio Formoso\",   \"Sairé\",   \"Salgadinho\",   \"Salgueiro\",   \"Saloá\",   \"Sanharó\",   \"Santa Cruz\",   \"Santa Cruz da Baixa Verde\",   \"Santa Cruz do Capibaribe\",   \"Santa Filomena\",   \"Santa Maria da Boa Vista\",   \"Santa Maria do Cambucá\",   \"Santa Terezinha\",   \"São Benedito do Sul\",   \"São Bento do Una\",   \"São Caetano\",   \"São João\",   \"São Joaquim do Monte\",   \"São José da Coroa Grande\",   \"São José do Belmonte\",   \"São José do Egito\",   \"São Lourenço da Mata\",   \"São Vicente Férrer\",   \"Serra Talhada\",   \"Serrita\",   \"Sertânia\",   \"Sirinhaém\",   \"Solidão\",   \"Surubim\",   \"Tabira\",   \"Tacaimbó\",   \"Tacaratu\",   \"Tamandaré\",   \"Taquaritinga do Norte\",   \"Terezinha\",   \"Terra Nova\",   \"Timbaúba\",   \"Toritama\",   \"Tracunhaém\",   \"Trindade\",   \"Triunfo\",   \"Tupanatinga\",   \"Tuparetama\",   \"Venturosa\",   \"Verdejante\",   \"Vertente do Lério\",   \"Vertentes\",   \"Vicência\",   \"Vitória de Santo Antão\",   \"Xexéu\" ]",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        -440
+      ],
+      "id": "943f2df9-0397-4c8e-94c3-202f1401b29d",
+      "name": "Lista de Cidades PE"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.z-api.io/instances/3E301E14836C10689C150E37D3B903DB/token/0E07D9628EA2D1716F187A10/send-typing",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Client-Token",
+              "value": "F7f292613235142438850606ae6ed5f89S"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"phone\": \"{{ $('Norm').item.json.numero }}\",\n  \"typing\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1920,
+        -640
+      ],
+      "id": "b337c03b-341c-4295-b658-82c62f9cecd4",
+      "name": "HTTP Typing"
+    },
+    {
+      "parameters": {
+        "amount": 7
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2140,
+        -640
+      ],
+      "id": "0dff26b1-aaa5-4ca7-a038-9569d4ca14d0",
+      "name": "Wait7",
+      "webhookId": "4106c854-aee7-48d4-93bf-6e2ebbf2d26d"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df0b0258-c11d-48ab-be93-049944bbfefe",
+              "name": "Cidade",
+              "value": "={{ $json.Cidade }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        -640
+      ],
+      "id": "8f980596-be0f-484e-941a-5a9e790b5d61",
+      "name": "Existe cidade no Sheets"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9299d928-8a42-4630-8d22-eea6366d9108",
+              "name": "Nome",
+              "value": "={{ $json.Nome }}",
+              "type": "string"
+            },
+            {
+              "id": "4cf21d6f-172b-495e-a2ee-3e1bc17774bd",
+              "name": "Cidade",
+              "value": "={{ $json.Cidade }}",
+              "type": "string"
+            },
+            {
+              "id": "3b92ec2b-82fc-45c9-a8fc-701abf45dc58",
+              "name": "Mensagem",
+              "value": "={{ $json.Mensagem }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        -240
+      ],
+      "id": "3e3eb21f-7641-46e3-9995-7a66c7ec3361",
+      "name": "Pergunta qual Cidade"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "406318b9-5f9b-4f78-acac-86b151d7fc65",
+              "leftValue": "={{(() => {\n  const cidade = $json.Cidade?.trim();\n  const cidadesRaw = $('Lista de Cidades PE').item.json.cidadesPE;\n\n  try {\n    const cidades = JSON.parse(cidadesRaw);\n    return cidades.includes(cidade);\n  } catch (e) {\n    return false; // se falhar no parse ou se lista estiver corrompida\n  }\n})()}}",
+              "rightValue": "={{ $json.Cidade }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        820,
+        -440
+      ],
+      "id": "87308d47-37fc-4614-a245-678e37c227c0",
+      "name": "Confirma cidade"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1qDTH5FdDF2w6p76F5rOfxwmrKFY8_xS6IdVPnmpOa_k",
+          "mode": "list",
+          "cachedResultName": "Recebe_contatos_WhatsApp",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qDTH5FdDF2w6p76F5rOfxwmrKFY8_xS6IdVPnmpOa_k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1143499472,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qDTH5FdDF2w6p76F5rOfxwmrKFY8_xS6IdVPnmpOa_k/edit#gid=1143499472"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Key": "={{ $('Norm').item.json.sessionId }}",
+            "DDD": "={{ $('Norm').item.json.ddd }}",
+            "Número": "={{ $('Norm').item.json.numero }}",
+            "Nome": "={{ $('Norm').item.json.name }}",
+            "Data": "={{ (() => {\n  const d = new Date();\n  const dia = String(d.getDate()).padStart(2, '0');\n  const mes = String(d.getMonth() + 1).padStart(2, '0');\n  const ano = d.getFullYear();\n  return `${dia}/${mes}/${ano}`;\n})() }}"
+          },
+          "matchingColumns": [
+            "Key"
+          ],
+          "schema": [
+            {
+              "id": "Key",
+              "displayName": "Key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DDD",
+              "displayName": "DDD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Número",
+              "displayName": "Número",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cidade",
+              "displayName": "Cidade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Data",
+              "displayName": "Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Mensagem",
+              "displayName": "Mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        380,
+        -440
+      ],
+      "id": "95893764-cf7d-4ccc-8a12-17813187a67f",
+      "name": "Append or update row in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aoP14O6VZNKGLQKv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1qDTH5FdDF2w6p76F5rOfxwmrKFY8_xS6IdVPnmpOa_k",
+          "mode": "list",
+          "cachedResultName": "Recebe_contatos_WhatsApp",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qDTH5FdDF2w6p76F5rOfxwmrKFY8_xS6IdVPnmpOa_k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1143499472,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qDTH5FdDF2w6p76F5rOfxwmrKFY8_xS6IdVPnmpOa_k/edit#gid=1143499472"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Key": "={{ $('Get row(s) in sheet').item.json.Key }}",
+            "Cidade": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cidade', ``, 'string') }}",
+            "Mensagem": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Mensagem', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Key"
+          ],
+          "schema": [
+            {
+              "id": "Key",
+              "displayName": "Key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DDD",
+              "displayName": "DDD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Número",
+              "displayName": "Número",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cidade",
+              "displayName": "Cidade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data",
+              "displayName": "Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mensagem",
+              "displayName": "Mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1320,
+        0
+      ],
+      "id": "7fb4f700-5ed4-41fc-9023-76a116826b5d",
+      "name": "Append or update row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aoP14O6VZNKGLQKv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.z-api.io/instances/3E301E14836C10689C150E37D3B903DB/token/0E07D9628EA2D1716F187A10/send-text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Client-Token",
+              "value": "F7f292613235142438850606ae6ed5f89S"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  phone: $('sessionId').item.json.sessionId,\n  message: $('Agent1').item.json.output\n}) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2360,
+        -240
+      ],
+      "id": "eee76612-6d16-4890-abb7-6ed97ec473c0",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1700,
+        -240
+      ],
+      "id": "dfc5a912-13e4-4bd8-82fe-7c1e2438b802",
+      "name": "Wait",
+      "webhookId": "4ab2b997-0ddf-42df-b455-c4e4cae80d8f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.z-api.io/instances/3E301E14836C10689C150E37D3B903DB/token/0E07D9628EA2D1716F187A10/send-typing",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Client-Token",
+              "value": "F7f292613235142438850606ae6ed5f89S"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"phone\": \"{{ $('Norm').item.json.numero }}\",\n  \"typing\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1920,
+        -240
+      ],
+      "id": "ac2687ca-eff4-4b63-aff2-0e1e4fa15a29",
+      "name": "HTTP Typing1"
+    },
+    {
+      "parameters": {
+        "amount": 7
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2140,
+        -240
+      ],
+      "id": "7f5d8a46-64e6-4554-a288-e312e4bbb268",
+      "name": "Wait10",
+      "webhookId": "4106c854-aee7-48d4-93bf-6e2ebbf2d26d"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ce01af9e-c388-4ace-a75f-7e1fb0b2062b",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1160,
+        -440
+      ],
+      "id": "754c4fec-6451-4c2c-b4af-9017e0e02153",
+      "name": "Webhook",
+      "webhookId": "ce01af9e-c388-4ace-a75f-7e1fb0b2062b"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9e0d4e1d-e5a2-444f-bf4a-fbf1b40a2600",
+              "leftValue": "={{ $json.group }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -720,
+        -440
+      ],
+      "id": "3f7ed6d9-7d3c-492f-96ac-546c955cfaa8",
+      "name": "If verifica grupo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.z-api.io/instances/3E301E14836C10689C150E37D3B903DB/token/0E07D9628EA2D1716F187A10/send-text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Client-Token",
+              "value": "F7f292613235142438850606ae6ed5f89S"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"phone\": \"{{ $('Norm').item.json.numero }}\",\n  \"message\": \"{{ `Olá, ${$('Norm').item.json.name}, nós só atendemos regiões do Estado de Pernambuco.` }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -60,
+        -200
+      ],
+      "id": "5f105118-060f-4261-becc-81c62b076d84",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "amount": 7
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -280,
+        -200
+      ],
+      "id": "280949b1-e934-4b3d-a7e6-9557f0480345",
+      "name": "Wait11",
+      "webhookId": "4106c854-aee7-48d4-93bf-6e2ebbf2d26d"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Norm": {
+      "main": [
+        [
+          {
+            "node": "If verifica grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtra número": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "sessionId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sessionId": {
+      "main": [
+        [
+          {
+            "node": "Lista de Cidades PE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Confirma cidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lista de Cidades PE": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Typing": {
+      "main": [
+        [
+          {
+            "node": "Wait7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait7": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Existe cidade no Sheets": {
+      "main": [
+        [
+          {
+            "node": "Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pergunta qual Cidade": {
+      "main": [
+        [
+          {
+            "node": "Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirma cidade": {
+      "main": [
+        [
+          {
+            "node": "Existe cidade no Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pergunta qual Cidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet4": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Typing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Typing1": {
+      "main": [
+        [
+          {
+            "node": "Wait10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait10": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Norm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If verifica grupo": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filtra número",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait11": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3b5ec3af-77e9-4f84-97a8-4631b4c7d048",
+  "meta": {
+    "templateId": "self-building-ai-agent",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "37ceb54e4f89caec4e456c1833a2949fac83864a634c1fc6ded27d1b2bd046a0"
+  },
+  "id": "v9gy2yH0h84skVv6",
+  "tags": []
+}
